@@ -1,7 +1,7 @@
 // Global state
 const state = {
     currentScreen: 'home',
-    farmerName: 'Bidyut Panda', // This would typically come from a backend
+    farmerName: 'Bidyut Panda',
     weatherData: null,
     marketPrices: null,
     schemes: null,
