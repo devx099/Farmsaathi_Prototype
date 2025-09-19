@@ -429,6 +429,12 @@ function initializeChat() {
             }
         });
     }
+
+    // Add welcome message when chat is first opened
+    const messagesContainer = document.getElementById('chat-messages');
+    if (messagesContainer && messagesContainer.children.length === 0) {
+        renderMessage('assistant', 'Namaskar! I\'m Kishu, your AI farming assistant. I\'m here to help you with crop recommendations, weather updates, pest management, and any farming questions you have. How can I assist you today?');
+    }
 }
 
 function renderMessage(role, text) {
