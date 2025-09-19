@@ -68,6 +68,75 @@ const translations = {
         account: 'Account',
         signOut: 'Sign Out'
     },
+    or: {
+        // Navigation
+        home: 'ଘର',
+        community: 'ସମୁଦାୟ',
+        profile: 'ପ୍ରୋଫାଇଲ୍',
+        settings: 'ସେଟିଙ୍ଗ୍ସ',
+
+        // Home Dashboard
+        welcome: 'ସ୍ୱାଗତ',
+        cropRecommendation: 'ଫସଲ ସୁପାରିଶ',
+        weatherAndAlerts: 'ଆବହାଓା ଏବଂ ସତର୍କତା',
+        marketPrices: 'ବଜାର ଦର',
+        govtSchemes: 'ସରକାରୀ ଯୋଜନା',
+
+        // Crop Recommendation
+        soilType: 'ମାଟିର ପ୍ରକାର',
+        selectSoilType: 'ମାଟି ପ୍ରକାର ବାଛନ୍ତୁ',
+        clay: 'ଚିକଟି ମାଟି',
+        sandy: 'ବାଲୁକା ମାଟି',
+        loamy: 'ଦୋମଟ ମାଟି',
+        silt: 'ଗାଦ ମାଟି',
+        waterAvailability: 'ଜଳ ଉପଲବ୍ଧତା',
+        getRecommendation: 'ସୁପାରିଶ ଦିଅନ୍ତୁ',
+        recommendedCrops: 'ସୁପାରିଶ ରହିଥିବା ଫସଲ',
+
+        // Weather
+        currentTemp: 'ବର୍ତ୍ତମାନ ତାପମାତ୍ରା',
+        condition: 'ପରିସ୍ଥିତି',
+        forecast: '୭-ଦିନର ପୂର୍ବାନୁମାନ',
+        alerts: 'ସତର୍କତା',
+        warning: 'ଚେତାବନୀ',
+        info: 'ତଥ୍ୟ',
+
+        // Market Prices
+        searchCrop: 'ଫସଲ ଖୋଜନ୍ତୁ...',
+        crop: 'ଫସଲ',
+        mandi: 'ମଣ୍ଡି',
+        price: 'ଦର/କ୍ୱିନ୍ଟାଲ୍',
+
+        // Profile
+        farmerId: 'କୃଷକ ଆଇଡି',
+        personalInfo: 'ବ୍ୟକ୍ତିଗତ ସୂଚନା',
+        village: 'ଗାଁ',
+        district: 'ଜିଲ୍ଲା',
+        state: 'ରାଜ୍ୟ',
+        farmingDetails: 'ଚାଷର ବିବରଣୀ',
+        landArea: 'ଜମି ଅଞ୍ଚଳ',
+        mainCrops: 'ମୁଖ୍ୟ ଫସଲ',
+        soilTypeLabel: 'ମାଟି ପ୍ରକାର',
+        contactInfo: 'ଯୋଗାଯୋଗ ସୂଚନା',
+        mobile: 'ମୋବାଇଲ୍',
+        email: 'ଇମେଲ୍',
+        editProfile: 'ପ୍ରୋଫାଇଲ୍ ସଂଶୋଧନ',
+
+        // Settings
+        languagePreference: 'ଭାଷା ପସନ୍ଦ',
+        display: 'ଡିସପ୍ଲେ',
+        darkMode: 'ଡାର୍କ ମୋଡ୍',
+        largeText: 'ବଡ ଟେକ୍ଷ୍ଟ',
+        vibrantColors: 'ଜୀବନ୍ତ ରଙ୍ଗ',
+        notifications: 'ସୂଚନା',
+        weatherAlerts: 'ଆବହାଓା ସତର୍କତା',
+        priceAlerts: 'ଦର ସତର୍କତା',
+        schemeAlerts: 'ଯୋଜନା ସତର୍କତା',
+        dataUsage: 'ଡାଟା ବ୍ୟବହାର',
+        saveDataMode: 'ଡାଟା ସେଭ୍ ମୋଡ୍',
+        account: 'ଖାତା',
+        signOut: 'ସାଇନ୍ ଆଉଟ୍'
+    },
     hi: {
         // Navigation
         home: 'होम',

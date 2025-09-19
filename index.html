@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4CAF50">
     <title>Smart Farmer Advisory App</title>
-    <link rel="icon" type="image/png" href="Farmsaathi.png">
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Scripts -->
     <script src="translations.js" defer></script>
     <script src="app.js" defer></script>
@@ -20,326 +19,358 @@
     <script src="translations.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- Home Dashboard -->
-        <div class="screen" id="home-screen">
-            <!-- AI Chat Bot Logo for Presentation -->
-            <div class="kishu-bot-logo-container">
-                <div class="kishu-bot-logo">
-                    <span class="material-icons bot-icon">smart_toy</span>
-                    <span class="kishu-bot-name">Kishu</span>
-                </div>
-                <div class="kishu-bot-caption">Your AI Chat Bot</div>
+<div id="app">
+    <!-- Home Dashboard -->
+    <div class="screen" id="home-screen">
+        <!-- AI Chat Bot Logo for Presentation -->
+        <div class="kishu-bot-logo-container">
+            <div class="kishu-bot-logo" id="kishu-entry">
+                <span class="material-icons bot-icon">smart_toy</span>
+                <span class="kishu-bot-name">Kishu</span>
             </div>
-            
-            <div class="welcome-message">
-                <h2><span data-translate="welcome">Welcome</span>, <span id="farmer-name">Farmer</span>!</h2>
+            <div class="kishu-bot-caption">Your AI Chat Bot</div>
+        </div>
+
+        <div class="welcome-message">
+            <h2><span data-translate="welcome">Welcome</span>, <span id="farmer-name">Farmer</span>!</h2>
+        </div>
+
+        <div class="dashboard-grid">
+            <button class="dashboard-btn" onclick="navigateTo('crop-recommendation')">
+                <span class="material-icons">grass</span>
+                <span data-translate="cropRecommendation">Crop Recommendation</span>
+            </button>
+            <button class="dashboard-btn" onclick="navigateTo('weather')">
+                <span class="material-icons">wb_sunny</span>
+                <span data-translate="weatherAndAlerts">Weather & Alerts</span>
+            </button>
+            <button class="dashboard-btn" onclick="navigateTo('market')">
+                <span class="material-icons">trending_up</span>
+                <span data-translate="marketPrices">Market Prices</span>
+            </button>
+            <button class="dashboard-btn" onclick="navigateTo('schemes')">
+                <span class="material-icons">policy</span>
+                <span data-translate="govtSchemes">Govt Schemes</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Kishu Chat Screen -->
+    <div class="screen hidden" id="chat-screen">
+        <h2>Kishu AI Assistant</h2>
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will render here -->
             </div>
-            
-            <div class="dashboard-grid">
-                <button class="dashboard-btn" onclick="navigateTo('crop-recommendation')">
-                    <span class="material-icons">grass</span>
-                    <span data-translate="cropRecommendation">Crop Recommendation</span>
-                </button>
-                <button class="dashboard-btn" onclick="navigateTo('weather')">
-                    <span class="material-icons">wb_sunny</span>
-                    <span data-translate="weatherAndAlerts">Weather & Alerts</span>
-                </button>
-                <button class="dashboard-btn" onclick="navigateTo('market')">
-                    <span class="material-icons">trending_up</span>
-                    <span data-translate="marketPrices">Market Prices</span>
-                </button>
-                <button class="dashboard-btn" onclick="navigateTo('schemes')">
-                    <span class="material-icons">policy</span>
-                    <span data-translate="govtSchemes">Govt Schemes</span>
+            <div class="chat-recommendations" id="chat-recommendations">
+                <!-- Suggested questions will render here -->
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-input" placeholder="Ask Kishu anything...">
+                <button class="primary-btn chat-send-btn" id="chat-send-btn">
+                    <span class="material-icons">send</span>
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- Crop Recommendation Screen -->
-        <div class="screen hidden" id="crop-recommendation-screen">
-            <h2>Crop Recommendation</h2>
-            <div class="input-form">
-                <select id="soil-type">
-                    <option value="">Select Soil Type</option>
-                    <option value="clay">Clay</option>
-                    <option value="sandy">Sandy</option>
-                    <option value="loamy">Loamy</option>
-                    <option value="silt">Silt</option>
+    <!-- Community Screen -->
+    <div class="screen hidden" id="community-screen">
+        <h2 data-translate="community">Community</h2>
+        <div class="community-compose">
+            <textarea id="community-input" rows="3" placeholder="Share a tip or ask a question..."></textarea>
+            <button class="primary-btn" id="community-post-btn">Post</button>
+        </div>
+        <div class="community-list" id="community-list">
+            <!-- Posts render here -->
+        </div>
+    </div>
+
+
+    <!-- Crop Recommendation Screen -->
+    <div class="screen hidden" id="crop-recommendation-screen">
+        <h2>Crop Recommendation</h2>
+        <div class="input-form">
+            <select id="soil-type">
+                <option value="">Select Soil Type</option>
+                <option value="clay">Clay</option>
+                <option value="sandy">Sandy</option>
+                <option value="loamy">Loamy</option>
+                <option value="silt">Silt</option>
+            </select>
+
+            <div class="slider-container">
+                <label>Water Availability</label>
+                <input type="range" id="water-availability" min="0" max="100">
+                <span id="water-value">50%</span>
+            </div>
+
+            <button class="primary-btn" onclick="getCropRecommendation()">
+                Get Recommendation
+            </button>
+
+            <div id="recommendation-result" class="hidden">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Weather Screen -->
+    <div class="screen hidden" id="weather-screen">
+        <h2>Weather & Alerts</h2>
+        <div class="weather-container">
+            <div class="current-weather">
+                <div id="temperature">-- °C</div>
+                <div id="condition">Loading...</div>
+            </div>
+            <div class="weather-alerts" id="weather-alerts">
+                <!-- Weather alerts will be inserted here -->
+            </div>
+            <div class="forecast" id="forecast">
+                <!-- 7-day forecast will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Prices Screen -->
+    <div class="screen hidden" id="market-screen">
+        <h2>Market Prices</h2>
+        <div class="search-container">
+            <input type="text" id="crop-search" placeholder="Search crop...">
+        </div>
+        <div class="price-table-container">
+            <table id="price-table">
+                <thead>
+                <tr>
+                    <th>Crop</th>
+                    <th>Mandi</th>
+                    <th>Price/Quintal</th>
+                </tr>
+                </thead>
+                <tbody id="price-table-body">
+                <!-- Market prices will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Government Schemes Screen -->
+    <div class="screen hidden" id="schemes-screen">
+        <h2>Government Schemes</h2>
+        <div class="schemes-header">
+            <div class="search-box">
+                <span class="material-icons">search</span>
+                <input type="text" placeholder="Search schemes..." id="scheme-search">
+            </div>
+            <div class="schemes-filter">
+                <select id="scheme-category">
+                    <option value="all">All Categories</option>
+                    <option value="financial">Financial Support</option>
+                    <option value="insurance">Insurance</option>
+                    <option value="equipment">Equipment Subsidy</option>
+                    <option value="training">Training & Education</option>
                 </select>
-                
-                <div class="slider-container">
-                    <label>Water Availability</label>
-                    <input type="range" id="water-availability" min="0" max="100">
-                    <span id="water-value">50%</span>
-                </div>
-
-                <button class="primary-btn" onclick="getCropRecommendation()">
-                    Get Recommendation
-                </button>
-
-                <div id="recommendation-result" class="hidden">
-                    <!-- Results will be inserted here -->
-                </div>
             </div>
         </div>
-
-        <!-- Weather Screen -->
-        <div class="screen hidden" id="weather-screen">
-            <h2>Weather & Alerts</h2>
-            <div class="weather-container">
-                <div class="current-weather">
-                    <div id="temperature">-- °C</div>
-                    <div id="condition">Loading...</div>
+        <div class="schemes-container" id="schemes-container">
+            <!-- Sample scheme card structure -->
+            <div class="scheme-card">
+                <div class="scheme-card-header">
+                    <span class="material-icons scheme-icon">payments</span>
+                    <h3>PM-KISAN</h3>
+                    <span class="scheme-badge">Financial Support</span>
                 </div>
-                <div class="weather-alerts" id="weather-alerts">
-                    <!-- Weather alerts will be inserted here -->
-                </div>
-                <div class="forecast" id="forecast">
-                    <!-- 7-day forecast will be inserted here -->
+                <div class="scheme-card-content">
+                    <p class="scheme-description">Direct income support of ₹6000 per year to farmers</p>
+                    <div class="scheme-highlights">
+                        <div class="highlight-item">
+                            <span class="material-icons">calendar_today</span>
+                            <span>4 months payment cycle</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="material-icons">group</span>
+                            <span>All farmer categories</span>
+                        </div>
+                    </div>
+                    <div class="scheme-actions">
+                        <button class="scheme-btn primary">Apply Now</button>
+                        <button class="scheme-btn secondary">Learn More</button>
+                    </div>
                 </div>
             </div>
+            <!-- End of sample card -->
         </div>
-
-        <!-- Market Prices Screen -->
-        <div class="screen hidden" id="market-screen">
-            <h2>Market Prices</h2>
-            <div class="search-container">
-                <input type="text" id="crop-search" placeholder="Search crop...">
-            </div>
-            <div class="price-table-container">
-                <table id="price-table">
-                    <thead>
-                        <tr>
-                            <th>Crop</th>
-                            <th>Mandi</th>
-                            <th>Price/Quintal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="price-table-body">
-                        <!-- Market prices will be inserted here -->
-                    </tbody>
-                </table>
-            </div>
+        <div class="schemes-pagination">
+            <button class="pagination-btn" disabled>
+                <span class="material-icons">chevron_left</span>
+            </button>
+            <span class="pagination-info">Page 1 of 3</span>
+            <button class="pagination-btn">
+                <span class="material-icons">chevron_right</span>
+            </button>
         </div>
+    </div>
 
-        <!-- Government Schemes Screen -->
-        <div class="screen hidden" id="schemes-screen">
-            <h2>Government Schemes</h2>
-            <div class="schemes-header">
-                <div class="search-box">
-                    <span class="material-icons">search</span>
-                    <input type="text" placeholder="Search schemes..." id="scheme-search">
+    <!-- Profile Screen -->
+    <div class="screen hidden" id="profile-screen">
+        <h2>Farmer Profile</h2>
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <span class="material-icons">account_circle</span>
                 </div>
-                <div class="schemes-filter">
-                    <select id="scheme-category">
-                        <option value="all">All Categories</option>
-                        <option value="financial">Financial Support</option>
-                        <option value="insurance">Insurance</option>
-                        <option value="equipment">Equipment Subsidy</option>
-                        <option value="training">Training & Education</option>
+                <h3 id="profile-name">Bidyut Panda</h3>
+                <p class="farmer-id">Farmer ID: OR789012</p>
+            </div>
+
+            <div class="profile-card">
+                <h4>Personal Information</h4>
+                <div class="profile-info">
+                    <div class="info-item">
+                        <span class="info-label">Village</span>
+                        <span class="info-value">Balugaon</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">District</span>
+                        <span class="info-value">Khordha</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">State</span>
+                        <span class="info-value">Odisha</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h4>Farming Details</h4>
+                <div class="profile-info">
+                    <div class="info-item">
+                        <span class="info-label">Land Area</span>
+                        <span class="info-value">3.2 Acres</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Main Crops</span>
+                        <span class="info-value">Paddy, Sugarcane, Groundnut</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Soil Type</span>
+                        <span class="info-value">Red and Yellow</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h4>Contact Information</h4>
+                <div class="profile-info">
+                    <div class="info-item">
+                        <span class="info-label">Mobile</span>
+                        <span class="info-value">+91 82917 65432</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">bidyut.panda@kisan.in</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="primary-btn edit-profile-btn">
+                <span class="material-icons">edit</span>
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div class="screen hidden" id="settings-screen">
+        <h2>Settings</h2>
+        <div class="settings-container">
+            <div class="settings-section">
+                <h4>Language Preference</h4>
+                <div class="settings-option">
+                    <select id="language-select" class="settings-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="mr">मराठी (Marathi)</option>
                     </select>
                 </div>
             </div>
-            <div class="schemes-container" id="schemes-container">
-                <!-- Sample scheme card structure -->
-                <div class="scheme-card">
-                    <div class="scheme-card-header">
-                        <span class="material-icons scheme-icon">payments</span>
-                        <h3>PM-KISAN</h3>
-                        <span class="scheme-badge">Financial Support</span>
-                    </div>
-                    <div class="scheme-card-content">
-                        <p class="scheme-description">Direct income support of ₹6000 per year to farmers</p>
-                        <div class="scheme-highlights">
-                            <div class="highlight-item">
-                                <span class="material-icons">calendar_today</span>
-                                <span>4 months payment cycle</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="material-icons">group</span>
-                                <span>All farmer categories</span>
-                            </div>
-                        </div>
-                        <div class="scheme-actions">
-                            <button class="scheme-btn primary">Apply Now</button>
-                            <button class="scheme-btn secondary">Learn More</button>
-                        </div>
-                    </div>
+
+            <div class="settings-section">
+                <h4>Notifications</h4>
+                <div class="settings-option">
+                    <label class="switch-label">
+                        <span>Weather Alerts</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </label>
                 </div>
-                <!-- End of sample card -->
+                <div class="settings-option">
+                    <label class="switch-label">
+                        <span>Price Alerts</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <label class="switch-label">
+                        <span>Government Schemes</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </label>
+                </div>
             </div>
-            <div class="schemes-pagination">
-                <button class="pagination-btn" disabled>
-                    <span class="material-icons">chevron_left</span>
-                </button>
-                <span class="pagination-info">Page 1 of 3</span>
-                <button class="pagination-btn">
-                    <span class="material-icons">chevron_right</span>
-                </button>
+
+            <div class="settings-section">
+                <h4>Display</h4>
+                <div class="settings-option">
+                    <label class="switch-label">
+                        <span>Vibrant Colors</span>
+                        <label class="switch">
+                            <input type="checkbox" id="vibrantModeToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </label>
+                </div>
             </div>
-        </div>
 
-        <!-- Profile Screen -->
-        <div class="screen hidden" id="profile-screen">
-            <h2>Farmer Profile</h2>
-            <div class="profile-container">
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        <span class="material-icons">account_circle</span>
-                    </div>
-                    <h3 id="profile-name">Bidyut Panda</h3>
-                    <p class="farmer-id">Farmer ID: OR789012</p>
-                </div>
-                
-                <div class="profile-card">
-                    <h4>Personal Information</h4>
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <span class="info-label">Village</span>
-                            <span class="info-value">Balugaon</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">District</span>
-                            <span class="info-value">Khordha</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">State</span>
-                            <span class="info-value">Odisha</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-card">
-                    <h4>Farming Details</h4>
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <span class="info-label">Land Area</span>
-                            <span class="info-value">3.2 Acres</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Main Crops</span>
-                            <span class="info-value">Paddy, Sugarcane, Groundnut</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Soil Type</span>
-                            <span class="info-value">Red and Yellow</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-card">
-                    <h4>Contact Information</h4>
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <span class="info-label">Mobile</span>
-                            <span class="info-value">+91 82917 65432</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <span class="info-value">bidyut.panda@kisan.in</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="primary-btn edit-profile-btn">
-                    <span class="material-icons">edit</span>
-                    Edit Profile
+            <div class="settings-section danger-zone">
+                <h4>Account</h4>
+                <button class="danger-btn">
+                    <span class="material-icons">logout</span>
+                    Sign Out
                 </button>
             </div>
         </div>
-
-        <!-- Settings Screen -->
-        <div class="screen hidden" id="settings-screen">
-            <h2>Settings</h2>
-            <div class="settings-container">
-                <div class="settings-section">
-                    <h4>Language Preference</h4>
-                    <div class="settings-option">
-                        <select id="language-select" class="settings-select">
-                            <option value="en">English</option>
-                            <option value="hi">हिंदी (Hindi)</option>
-                            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-                            <option value="gu">ગુજરાતી (Gujarati)</option>
-                            <option value="mr">मराठी (Marathi)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h4>Notifications</h4>
-                    <div class="settings-option">
-                        <label class="switch-label">
-                            <span>Weather Alerts</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </label>
-                    </div>
-                    <div class="settings-option">
-                        <label class="switch-label">
-                            <span>Price Alerts</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </label>
-                    </div>
-                    <div class="settings-option">
-                        <label class="switch-label">
-                            <span>Government Schemes</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h4>Display</h4>
-                    <div class="settings-option">
-                        <label class="switch-label">
-                            <span>Vibrant Colors</span>
-                            <label class="switch">
-                                <input type="checkbox" id="vibrantModeToggle" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-section danger-zone">
-                    <h4>Account</h4>
-                    <button class="danger-btn">
-                        <span class="material-icons">logout</span>
-                        Sign Out
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation Bar -->
-        <nav class="bottom-nav">
-            <button onclick="navigateTo('home')" class="nav-btn active" title="Home">
-                <span class="material-icons">home</span>
-                <span class="nav-label" data-translate="home">Home</span>
-            </button>
-            <button onclick="navigateTo('community')" class="nav-btn" title="Community">
-                <span class="material-icons">forum</span>
-                <span class="nav-label" data-translate="community">Community</span>
-            </button>
-            <button onclick="navigateTo('profile')" class="nav-btn" title="Profile">
-                <span class="material-icons">person</span>
-                <span class="nav-label" data-translate="profile">Profile</span>
-            </button>
-            <button onclick="navigateTo('settings')" class="nav-btn" title="Settings">
-                <span class="material-icons">settings</span>
-                <span class="nav-label" data-translate="settings">Settings</span>
-            </button>
-        </nav>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Navigation Bar -->
+    <nav class="bottom-nav">
+        <button onclick="navigateTo('home')" class="nav-btn active" title="Home">
+            <span class="material-icons">home</span>
+            <span class="nav-label" data-translate="home">Home</span>
+        </button>
+        <button onclick="navigateTo('community')" class="nav-btn" title="Community">
+            <span class="material-icons">forum</span>
+            <span class="nav-label" data-translate="community">Community</span>
+        </button>
+        <button onclick="navigateTo('profile')" class="nav-btn" title="Profile">
+            <span class="material-icons">person</span>
+            <span class="nav-label" data-translate="profile">Profile</span>
+        </button>
+        <button onclick="navigateTo('settings')" class="nav-btn" title="Settings">
+            <span class="material-icons">settings</span>
+            <span class="nav-label" data-translate="settings">Settings</span>
+        </button>
+    </nav>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

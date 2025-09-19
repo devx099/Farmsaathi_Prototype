@@ -1,7 +1,7 @@
 // Global state
 const state = {
     currentScreen: 'home',
-    farmerName: 'Bidyut Panda',
+    farmerName: 'Bidyut Panda', // This would typically come from a backend
     weatherData: null,
     marketPrices: null,
     schemes: null,
@@ -38,6 +38,9 @@ function navigateTo(screenId) {
         case 'schemes':
             loadGovernmentSchemes();
             break;
+        case 'community':
+            ensureCommunityInitialized();
+            break;
     }
 }
 
@@ -61,7 +64,7 @@ function updateLanguage(lang) {
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.dir = ['ar', 'ur'].includes(lang) ? 'rtl' : 'ltr';
     translatePage();
-    
+
     // Update dynamic content
     if (state.weatherData) {
         updateWeatherDisplay(state.weatherData);
@@ -186,14 +189,14 @@ function initApp() {
     toggleDarkMode(themeConfig.isDark);
     toggleLargeText(themeConfig.isLargeText);
     toggleVibrantMode(themeConfig.isVibrant);
-    
+
     // Set farmer's name
     document.getElementById('farmer-name').textContent = state.farmerName;
 
     // Setup water availability slider
     const waterSlider = document.getElementById('water-availability');
     const waterValue = document.getElementById('water-value');
-    
+
     if (waterSlider && waterValue) {
         waterSlider.addEventListener('input', (e) => {
             waterValue.textContent = `${e.target.value}%`;
@@ -208,6 +211,24 @@ function initApp() {
 
     // Initialize settings and their event listeners
     initializeSettings();
+
+    // Make Kishu entry clickable to open chat
+    const kishuEntry = document.getElementById('kishu-entry');
+    if (kishuEntry) {
+        kishuEntry.style.cursor = 'pointer';
+        kishuEntry.addEventListener('click', () => navigateTo('chat'));
+    }
+
+    // Initialize chat UI
+    initializeChat();
+
+    // Initialize community
+    ensureCommunityInitialized();
+
+    // Set Odia as default language
+    if (!localStorage.getItem('language')) {
+        updateLanguage('or');
+    }
 }
 
 // Crop Recommendation
@@ -305,13 +326,13 @@ function loadMarketPrices() {
         { crop: 'Potato', mandi: 'Okhla Mandi', price: 1200 },
         { crop: 'Tomato', mandi: 'Azadpur Mandi', price: 1800 }
     ];
-    
+
     updateMarketPricesTable(state.marketPrices);
 }
 
 function filterMarketPrices() {
     const searchTerm = document.getElementById('crop-search').value.toLowerCase();
-    const filteredPrices = state.marketPrices.filter(item => 
+    const filteredPrices = state.marketPrices.filter(item =>
         item.crop.toLowerCase().includes(searchTerm)
     );
     updateMarketPricesTable(filteredPrices);
@@ -320,7 +341,7 @@ function filterMarketPrices() {
 function updateMarketPricesTable(prices) {
     const tableBody = document.getElementById('price-table-body');
     const maxPrice = Math.max(...prices.map(p => p.price));
-    
+
     tableBody.innerHTML = prices
         .map(item => `
             <tr>
@@ -373,3 +394,149 @@ function toggleSchemeDetails(button) {
 
 // Initialize the app when the page loads
 document.addEventListener('DOMContentLoaded', initApp);
+
+// -------------------- Kishu Chat --------------------
+const odishaSuggestedQuestions = [
+    'What is today\'s paddy MSP in Odisha?',
+    'Best time to sow rice in coastal Odisha?',
+    'How to manage brown planthopper in paddy?',
+    'Groundnut recommended variety for Kharif in Odisha?',
+    'Upcoming week rainfall forecast for Khordha?'
+];
+
+function initializeChat() {
+    const recos = document.getElementById('chat-recommendations');
+    if (recos) {
+        recos.innerHTML = odishaSuggestedQuestions.map(q => `<button class="chat-reco">${q}</button>`).join('');
+        recos.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target && target.classList.contains('chat-reco')) {
+                sendChat(target.textContent);
+            }
+        });
+    }
+
+    const sendBtn = document.getElementById('chat-send-btn');
+    const input = document.getElementById('chat-input');
+    if (sendBtn && input) {
+        sendBtn.addEventListener('click', () => {
+            if (input.value.trim()) sendChat(input.value.trim());
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (input.value.trim()) sendChat(input.value.trim());
+            }
+        });
+    }
+}
+
+function renderMessage(role, text) {
+    const container = document.getElementById('chat-messages');
+    if (!container) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = `chat-msg ${role}`;
+    wrapper.innerHTML = `
+        <div class="avatar">${role === 'assistant' ? '<span class="material-icons">smart_toy</span>' : '<span class="material-icons">person</span>'}</div>
+        <div class="bubble">${escapeHtml(text)}</div>
+    `;
+    container.appendChild(wrapper);
+    container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function sendChat(message) {
+    const input = document.getElementById('chat-input');
+    if (input) input.value = '';
+    renderMessage('user', message);
+
+    // Mock AI reply for now
+    const reply = await getAssistantReply(message);
+    renderMessage('assistant', reply);
+}
+
+async function getAssistantReply(message) {
+    // Very simple rule-based mock tuned for Odisha farmer topics
+    const text = message.toLowerCase();
+    if (text.includes('msp') || text.includes('price')) {
+        return 'As per recent seasons, paddy MSP is around ₹2,183/q for Common and ₹2,203/q for Grade-A. Please verify with local procurement center for current cycle.';
+    }
+    if (text.includes('sow') || text.includes('sowing')) {
+        return 'For coastal Odisha, Kharif paddy sowing generally begins with monsoon onset (June–July). Ensure field puddling and use certified seeds.';
+    }
+    if (text.includes('planthopper') || text.includes('pest')) {
+        return 'For brown planthopper: maintain proper spacing, avoid excess nitrogen, drain fields intermittently, and if required use recommended insecticides per local agri office.';
+    }
+    if (text.includes('groundnut') || text.includes('peanut')) {
+        return 'Popular Kharif groundnut varieties in Odisha include Devi (ICGV 91114) and JL-24. Sow with seed treatment and ensure well-drained sandy loam.';
+    }
+    if (text.includes('rain') || text.includes('forecast') || text.includes('weather')) {
+        return 'I can provide a basic outlook: scattered showers expected this week in many Odisha districts. For precise daily forecast, check IMD or state agri weather portal.';
+    }
+    return 'Thanks for your question. I will provide guidance based on Odisha farming practices. Could you share crop, district, and season?';
+}
+
+// -------------------- Community --------------------
+let communityInitialized = false;
+function ensureCommunityInitialized() {
+    if (communityInitialized) return;
+    const list = document.getElementById('community-list');
+    const input = document.getElementById('community-input');
+    const postBtn = document.getElementById('community-post-btn');
+    if (!list || !input || !postBtn) return;
+
+    const seedPosts = [
+        { author: 'Sanjay (Balasore)', text: 'Mulching helped retain soil moisture in my groundnut field.' },
+        { author: 'Laxmi (Puri)', text: 'Which short-duration paddy variety suits delayed monsoon?' }
+    ];
+    list.innerHTML = seedPosts.map(p => communityPostHtml(p.author, p.text)).join('');
+
+    postBtn.addEventListener('click', () => addCommunityPost());
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addCommunityPost();
+        }
+    });
+
+    communityInitialized = true;
+}
+
+function communityPostHtml(author, text) {
+    return `
+        <div class="post">
+            <div class="post-header">
+                <div class="avatar"><span class="material-icons">person</span></div>
+                <div class="meta">
+                    <div class="author">${escapeHtml(author)}</div>
+                    <div class="time">just now</div>
+                </div>
+            </div>
+            <div class="post-body">${escapeHtml(text)}</div>
+            <div class="post-actions">
+                <button class="post-action"><span class="material-icons">thumb_up</span></button>
+                <button class="post-action"><span class="material-icons">chat_bubble</span></button>
+            </div>
+        </div>
+    `;
+}
+
+function addCommunityPost() {
+    const list = document.getElementById('community-list');
+    const input = document.getElementById('community-input');
+    if (!list || !input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const author = state.farmerName || 'Farmer';
+    list.insertAdjacentHTML('afterbegin', communityPostHtml(author, text));
+    input.value = '';
+}
+
